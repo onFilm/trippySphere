@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        body {
+            margin: 0px;
+            overflow: hidden;
+        }
+
+        .ui {
+            position: absolute;
+        }
+
+        button {
+            margin: 20px;
+            height: 40px;
+            width: 80px;
+        }
+
+        canvas {
+            display: block;
+            /* fix necessary to remove space at bottom of canvas */
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/103/three.min.js"></script>
+    <script src="https://threejs.org/build/three.min.js"></script>
+    <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+</head>
+
+<body>
+    <button style="top:0" id="fire" class="ui">Fire</button>
+</body>
+
+</html>
+
+<script>
+    var button = document.getElementById("fire");
+    button.addEventListener("click", onButtonClick, false);
+    function onButtonClick(event) {
+        if (reverse) {
+            reverse = false;
+        } else {
+            reverse = true;
+        }
+    }
+
+    //variable declarations
+    let scene, camera, renderer, cube, sphere;
+    let element = [];
+    let x = 0;
+    let reverse = true;
+
+    let init = function () {
+
+        //create the scene
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x000000);
+
+        //setup camera
+        camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
+        camera.position.set(0, 0, 100);
+        camera.lookAt(0, 0, 0);
+
+        //create box
+        createBox();
+
+        //render initialization
+        renderer = new THREE.WebGLRenderer();
+        renderer.render(scene, camera);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+    };
+
+    let createBox = function () {
+        var geometry = new THREE.BoxGeometry(0.1,0.1,0.1);
+        var material = new THREE.MeshBasicMaterial({ color: Math.random() * 0xD2001A });
+        cube = new THREE.Mesh(geometry, material);
+        cube.position.x = randomInRange(-30, 30);
+        cube.position.y = randomInRange(-30, 30);
+        cube.position.z = randomInRange(-50, 50);
+
+        if (reverse) {
+            x = x + 0.000001;
+            camera.rotation.z += x;
+        } else {
+            x = x - 0.000001;
+            camera.rotation.z -= x;
+        }
+
+        scene.add(cube);
+        element.push(cube);
+    };
+
+    let mainloop = function () {
+        let x = Math.random();
+        createBox();
+        renderer.render(scene, camera);
+        requestAnimationFrame(mainloop);
+    };
+
+    let randomInRange = function (from, to) {
+        let x = Math.random() * (to - from);
+        return (x + from) * 2;
+    };
+
+    let randomSize = function (from, to) {
+        let x = Math.random() * (to - from);
+        return (x + from);
+    };
+
+    let randomNumber = function (from, to) {
+        let x = Math.random() * (to - from);
+        return x;
+    };
+
+    init();
+    mainloop();
+</script>
